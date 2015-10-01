@@ -1,5 +1,4 @@
 <?php
-class Bluesky_cli{
 /*
  * This is bluesky-cli connector library for PHP programmer.
  * 
@@ -12,6 +11,8 @@ class Bluesky_cli{
  * 	$blueskyGateway = "http://$GATEWAYDOMAIN:$PORT";
  * 	$bluesky_cli = new Bluesky_cli($blueskyGateway, "guest", "guest");
  */
+
+class Bluesky_cli{
 	var $_blueskyGateway,
 	    $_username,
 	    $_password;
