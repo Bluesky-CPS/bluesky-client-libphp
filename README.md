@@ -18,10 +18,10 @@ How to
 
 - clone the library here
 
-```shell
-git clone https://github.com/not001praween001/bluesky-client-libphp.git
-cd bluesky-client-libphp
-```
+  ```shell
+  git clone https://github.com/not001praween001/bluesky-client-libphp.git
+  cd bluesky-client-libphp
+  ```
 
 - write the code
 
