@@ -43,17 +43,25 @@ class Bluesky_cli{
 		// test blueskyGet;
 		//echo $this->blueskyGet($this->createBlueskyParam("ls", array("noneFix", "edconnected"))) . "\r\n";
 		echo "\r\n";
-		// test list_ed;
+		// test list_ed and getsensors;
 		$list_ed = $this->list_ed();
 		for($i = 0; $i < count($list_ed); $i++){
 			echo $list_ed[$i]->{'EDIP'} . "\r\n";
 			$embeddedDeviceIP = $list_ed[$i]->{'EDIP'};
 			$connStatus = $list_ed[$i]->{'connStatus'};
 			if($connStatus === "online"){
-				
+				$sensorAllChannelDat = $this->getSensorDatByAdc($embeddedDeviceIP, "mcp3208");
+				if($sensorAllChannelDat){
+					echo "[";
+					foreach($sensorAllChannelDat as $eachChannel){
+						echo $eachChannel . ", ";
+					}
+					echo "]\r\n";
+					echo $this->getSensorDatByAdcChannel($embeddedDeviceIP, "mcp3208", 0) . "\r\n";
+				}
 			}
 		}
-		echo "\r\n";
+		/*echo "\r\n";
 		// test getSensorDatByAdc;
 		$sensorAllChannelDat = $this->getSensorDatByAdc("172.16.4.105", "mcp3208");
 		echo "[";
@@ -61,7 +69,7 @@ class Bluesky_cli{
 			echo $eachChannel . ", ";
 		}
 		echo "]\r\n";
-		echo $this->getSensorDatByAdcChannel("172.16.4.105", "mcp3208", 0) . "\r\n";
+		echo $this->getSensorDatByAdcChannel("172.16.4.105", "mcp3208", 0) . "\r\n";*/
 	}
 
 	/**
@@ -81,18 +89,24 @@ class Bluesky_cli{
 		$spiDat = null;
 		$opts = array($deviceIP, "spi", $adcmodule, $mosi, $miso, $clk, $ce);
 		$sensorDat = null;
-
+		
 		$sensorDat = $this->sensornetwork($opts);
-		$spiDat = json_decode($sensorDat)->{'ETLog'}->{'logging'}->{'spi'};
+		if($sensorDat){
+			$spiDat = json_decode($sensorDat)->{'ETLog'}->{'logging'}->{'spi'};
+		}
 		return $spiDat;
 	}
 
 	function getSensorDatByAdcChannel($deviceIP, $adcmodule, $ch){
+		$ret = null;
 		$allChannelDat = $this->getSensorDatByAdc($deviceIP, $adcmodule);
 		if($ch >= count($allChannelDat)){
-			return null;
+			return $ret;
+		}else if(is_array($allChannelDat)){
+			$ret = $allChannelDat[$ch];
+			return $ret;
 		}else{
-			return $allChannelDat[$ch];
+			return $ret;
 		}
 	}
 
@@ -148,7 +162,7 @@ class Bluesky_cli{
 					);
 		$context = stream_context_create($get_params);
 		$res = file_get_contents($this->_blueskyGateway . $blueskyParam, false, $context);
-
+		
 		if(json_decode($this->logout())->{'ETLog'}->{'logout'}->{'result'} === "true"){
 		}
 		return $res;
